@@ -1,6 +1,8 @@
 from flask import Flask, request, session, redirect, render_template, url_for, flash
 from flask_wtf.csrf import CSRFProtect
 from datetime import timedelta
+from flask import send_file
+import io
 from backend import *
 
 app = Flask(__name__)
@@ -9,7 +11,7 @@ app.config['REMEMBER_COOKIE_REFRESH_EACH_REQUEST'] = False
 app.config['WTF_CSRF_TIME_LIMIT'] = 3600
 app.config['SESSION_COOKIE_SECURE'] = True
 app.config['SESSION_COOKIE_HTTPONLY'] = True
-app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(minutes=60)
+app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(minutes=30)
 csrf = CSRFProtect(app)
 
 '''
@@ -108,8 +110,8 @@ def login():
             user = cursor.fetchone()
 
             if user:
+                session['user'] = user
                 session['user_id'] = user[0]
-                session['username'] = f"{user[1]} {user[3]}"
                 session['role'] = user[4]
 
                 if session.get('role') == "admin":
@@ -442,6 +444,146 @@ def demote_user():
 
     return redirect(url_for("manage_users"))
 
+@app.route('/profile')
+@nocache
+def profile():
+    return render_template('profile.html')
+
+@app.route('/update_profile', methods=["POST"])
+@nocache
+def update_profile():
+    if 'user_id' not in session:
+        flash("You must log in first.", "danger")
+        return redirect(url_for("login"))
+    
+    try:
+        first_name = request.form.get('first_name')
+        middle_name = request.form.get('middle_name')
+        last_name = request.form.get('last_name')
+        contact_number = request.form.get('contact_number')
+        
+        conn = connectSQL()
+        cursor = conn.cursor()
+        
+        query = """UPDATE users 
+                  SET FirstName = %s, MiddleName = %s, LastName = %s, PhoneNumber = %s 
+                  WHERE ID = %s"""
+        values = (first_name, middle_name, last_name, contact_number, session['user_id'])
+        
+        cursor.execute(query, values)
+        conn.commit()
+        
+        # Update session data
+        query = "SELECT * FROM users WHERE ID = %s"
+        cursor.execute(query, (session['user_id'],))
+        session['user'] = cursor.fetchone()
+        
+        flash("Profile updated successfully.", "success")
+        cursor.close()
+        conn.close()
+        
+    except Exception as e:
+        print(f"Profile Update Error: {e}")
+        flash("Error updating profile. Please try again.", "danger")
+    
+    return redirect(url_for("profile"))
+
+@app.route('/change-password', methods=["POST"])
+@nocache
+def change_password():
+    if 'user_id' not in session:
+        flash("You must be logged in to change your password.", "danger")
+        return redirect(url_for("login"))
+    
+    try:
+        current_password = encrypt(request.form.get('current_password'))
+        new_password = encrypt(request.form.get('new_password'))
+        confirm_password = encrypt(request.form.get('confirm_password'))
+        
+        if new_password != confirm_password:
+            flash("New passwords do not match.", "danger")
+            return redirect(url_for("profile"))
+        
+        conn = connectSQL()
+        cursor = conn.cursor()
+        
+        # Verify current password
+        query = "SELECT Password FROM users WHERE ID = %s"
+        cursor.execute(query, (session['user_id'],))
+        stored_password = cursor.fetchone()[0]
+        
+        if current_password != stored_password:
+            flash("Current password is incorrect.", "danger")
+            return redirect(url_for("profile"))
+        
+        # Update password
+        query = "UPDATE users SET Password = %s WHERE ID = %s"
+        values = (new_password, session['user_id'])
+        
+        cursor.execute(query, values)
+        conn.commit()
+        
+        flash("Password changed successfully.", "success")
+        cursor.close()
+        conn.close()
+        
+    except Exception as e:
+        print(f"Password Change Error: {e}")
+        flash("Error changing password. Please try again.", "danger")
+    
+    return redirect(url_for("profile"))
+
+@app.route('/upload-photo', methods=["POST"])
+@nocache
+def upload_photo():
+    if 'user_id' not in session:
+        flash("You must log in to upload a profile photo.", "danger")
+        return redirect(url_for("profile"))
+
+    if 'photo' not in request.files or request.files['photo'].filename == '':
+        flash("No file selected. Please choose a file.", "danger")
+        return redirect(url_for("profile"))
+
+    photo = request.files['photo']
+    allowed_extensions = {'png', 'jpg', 'jpeg'}
+
+    if '.' not in photo.filename or photo.filename.rsplit('.', 1)[1].lower() not in allowed_extensions:
+        flash("Invalid file type. Please upload an image file (png, jpg, jpeg).", "danger")
+        return redirect(url_for("profile"))
+
+    try:
+        # Generate a unique filename
+        filename = f"{session['user_id']}_profile.{photo.filename.rsplit('.', 1)[1].lower()}"
+        save_path = f"static/img/{filename}"
+        
+        # Save the file
+        photo.save(save_path)
+
+        # Update the database with the new photo path
+        conn = connectSQL()
+        cursor = conn.cursor()
+
+        query = "UPDATE users SET ProfilePhoto = %s WHERE ID = %s"
+        values = (save_path, session['user_id'])
+
+        cursor.execute(query, values)
+        conn.commit()
+
+        # Update session data
+        session['user'] = list(session['user'])
+        session['user'][8] = save_path 
+        session['user'] = tuple(session['user'])
+
+        flash("Profile photo updated successfully.", "success")
+
+        cursor.close()
+        conn.close()
+
+    except Exception as e:
+        flash("Error uploading profile photo. Please try again.", "danger")
+        print(f"Upload Photo Error: {e}")
+
+    return redirect(url_for("profile"))
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)
