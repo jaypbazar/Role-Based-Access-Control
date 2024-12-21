@@ -62,6 +62,20 @@ Returns:
     except Exception as e:
         print(f"Database Error: {e}")
 
+def is_admin(user_id) -> bool:
+    try:
+        conn = connectSQL()
+        cursor = conn.cursor()
+
+        query = "SELECT ID FROM users WHERE Role = 'admin'"
+        cursor.execute(query)
+
+        return user_id in cursor.fetchall()
+
+    except Exception as e:
+        print(f"Admin Check Error: {e}")
+
+    return False
 
 def nocache(view):
     '''

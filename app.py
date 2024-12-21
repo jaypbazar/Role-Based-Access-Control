@@ -114,7 +114,7 @@ def login():
                 session['user_id'] = user[0]
                 session['role'] = user[4]
 
-                if session.get('role') == "admin":
+                if is_admin(session.get('user_id')):
                     return redirect(url_for('adminPanel'))
 
                 return(redirect(url_for('index')))
@@ -163,7 +163,7 @@ def signup():
 
             flash("Registered successfully.", "success")
 
-            if session.get("role") == "admin":
+            if is_admin(session.get('user_id')):
                 return redirect(url_for("manage_users"))
             
             return render_template("login.html")
@@ -282,8 +282,8 @@ def logout():
 @app.route('/adminPanel')
 @nocache
 def adminPanel():
-    if 'user_id' in session:
-        if session.get('role') == 'admin':
+    if session.get('user_id'):
+        if is_admin(session.get('user_id')):
             try:
                 conn = connectSQL()
                 cursor = conn.cursor()
@@ -339,7 +339,7 @@ def update_status():
 @app.route('/manage_users', methods=["POST", "GET"])
 @nocache
 def manage_users():
-    if session.get('role') != 'admin':
+    if not is_admin(session.get('user_id')):
         flash("Access denied! Only admins are allowed.", "danger")
         return redirect(url_for('index'))
     
