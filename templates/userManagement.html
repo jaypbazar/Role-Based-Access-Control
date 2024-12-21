@@ -1,0 +1,153 @@
+{% extends "base.html" %}
+
+{% block title %}User Management{% endblock title %}
+
+{% block menu %}
+<div class="dropdown-menu dropdown-menu-end dropdown-menu-start-md">
+    <li><a class="dropdown-item" href="/">Home</a></li>
+    <li><a class="dropdown-item" href="/about">About</a></li>
+    <li><a class="dropdown-item" href="/terms">Terms &amp; Conditions</a></li>
+    <div class="dropdown-divider"></div>
+    <li><a class="dropdown-item" href="/logout">Log out</a></li>
+  </div>
+{% endblock menu %}
+
+{% block content %}
+    <div class="row justify-content-center m-0 p-0">
+        <div class="container bg-light col-10 m-5 p-5 rounded-5 text-black overflow-auto" style="--bs-bg-opacity: .7">
+            <h4 class="text-center">User Management</h4>
+            {% if session.admin_list %}
+            <hr>
+                <table class="table table-hover table-striped table-bordered border-dark caption-top align-middle table-sm shadow">
+                    <caption class="text-black fw-bold"><h5>Admins</h5></caption>
+                    <thead>
+                        <tr class="table-dark text-light text-center">
+                            <th class="text-uppercase">ID</th>
+                            <th class="text-uppercase">First Name</th>
+                            <th class="text-uppercase">Middle Name</th>
+                            <th class="text-uppercase">Last Name</th>
+                            <th class="text-uppercase">Contact</th>
+                            <th class="text-uppercase">Email</th>
+                            <th class="text-uppercase">Password</th>
+                            <th class="text-uppercase">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for user in session.admin_list %}
+                        <tr class="text-center">
+                            <td class="fw-bold">{{user[0]}}</td>
+                            <td>{{user[1]}}</td>
+                            <td>{{user[2]}}</td>
+                            <td>{{user[3]}}</td>
+                            <td>{{user[6]}}</td>
+                            <td>{{user[5]}}</td>
+                            <td>{{user[7]}}</td>
+                            <td class="text-center">
+                                <form action="/edit_profile" method="POST" class="d-inline">
+                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                    <input type="hidden" name="user_id" value="{{user[0]}}">
+                                    <button type="submit" class="btn btn-primary btn-sm me-1">Edit</button>
+                                </form>
+                                <a href="#" class="delete-user btn btn-danger btn-sm"
+                                   data-user-id="{{user[0]}}"
+                                   data-user-name="{{user[1]}} {{user[3]}}"
+                                   data-bs-toggle="modal"
+                                   data-bs-target="#deleteConfirmModal">Delete</a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            <hr>
+            {% endif %}
+
+            {% if session.user_list %}
+                <table class="table table-hover table-striped table-bordered border-dark caption-top align-middle table-sm shadow">
+                    <caption class="text-black fw-bold"><h5>Users</h5></caption>
+                    <thead>
+                        <tr class="table-dark text-light text-center">
+                            <th class="text-uppercase">ID</th>
+                            <th class="text-uppercase">First Name</th>
+                            <th class="text-uppercase">Middle Name</th>
+                            <th class="text-uppercase">Last Name</th>
+                            <th class="text-uppercase">Contact</th>
+                            <th class="text-uppercase">User Type</th>
+                            <th class="text-uppercase">Email</th>
+                            <th class="text-uppercase">Password</th>
+                            <th class="text-uppercase">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for user in session.user_list %}
+                        <tr class="text-center">
+                            <td class="fw-bold">{{user[0]}}</td>
+                            <td>{{user[1]}}</td>
+                            <td>{{user[2]}}</td>
+                            <td>{{user[3]}}</td>
+                            <td>{{user[6]}}</td>
+                            <td>{{user[4]}}</td>
+                            <td>{{user[5]}}</td>
+                            <td>{{user[7]}}</td>
+                            <td class="text-center">
+                                <form action="/edit_profile" method="POST" class="d-inline">
+                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                    <input type="hidden" name="user_id" value="{{user[0]}}">
+                                    <button type="submit" class="btn btn-primary btn-sm me-1">Edit</button>
+                                </form>
+                                <a href="#" class="delete-user btn btn-danger btn-sm"
+                                   data-user-id="{{user[0]}}"
+                                   data-user-name="{{user[1]}} {{user[3]}}"
+                                   data-bs-toggle="modal"
+                                   data-bs-target="#deleteConfirmModal">Delete</a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+            <h5>There are currently no users.</h5>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div class="modal fade" id="deleteConfirmModal" tabindex="-1" aria-labelledby="deleteConfirmModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content bg-danger-subtle rounded-4 p-2">
+                <div class="modal-header border-0">
+                    <h5 class="modal-title" id="deleteConfirmModalLabel">Confirm Delete</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body text-center py-4">
+                    <div class="mb-3">
+                        <i class="fas fa-exclamation-triangle text-danger fa-3x"></i>
+                    </div>
+                    <p class="mb-1">Are you sure you want to delete user</p>
+                    <p class="h5 mb-3" id="deleteUserName"></p>
+                    <p class="text-danger mb-0"><small>This action cannot be undone.</small></p>
+                </div>
+                <div class="modal-footer border-0">
+                    <button type="button" class="btn btn-outline-dark rounded-pill" data-bs-dismiss="modal">Cancel</button>
+                    <form action="/delete_user" method="POST" class="d-inline">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <input type="hidden" id="deleteUserId" name="user_id">
+                        <button type="submit" class="btn btn-danger rounded-pill">Delete User</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const deleteLinks = document.querySelectorAll('.delete-user');
+            
+            deleteLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    document.getElementById('deleteUserId').value = this.getAttribute('data-user-id');
+                    document.getElementById('deleteUserName').textContent = this.getAttribute('data-user-name');
+                });
+            });
+        });
+    </script>
+{% endblock content %}

@@ -36,3 +36,9 @@ p {
     background-color: #e9ecef;
     color: #6c757d;
 }
+
+th, td {
+    max-width: 8em;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}

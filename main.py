@@ -265,7 +265,7 @@ def delete_booking():
 
     except Exception as e:
         flash("Error in deleting reservation.", "danger")
-        print(f"Deleting Error: {e}")
+        print(f"Booking Deletion Error: {e}")
     
     return redirect(url_for('adminPanel'))
 
@@ -332,6 +332,65 @@ def update_status():
         print(f"Update Error: {e}")
 
     return redirect(url_for('adminPanel'))
+
+@app.route('/manage_users', methods=["POST", "GET"])
+@nocache
+def manage_users():
+    if session.get('role') != 'admin':
+        flash("Access denied! Only admins are allowed.", "danger")
+        return redirect(url_for('index'))
+    
+    try:
+        conn = connectSQL()
+
+        cursor = conn.cursor()
+
+        query = "SELECT * FROM users WHERE Role = 'student' OR Role = 'employee'"
+
+        cursor.execute(query)
+
+        session['user_list'] = cursor.fetchall()
+
+        query = "SELECT * FROM users WHERE Role = 'admin'"
+
+        cursor.execute(query)
+
+        session['admin_list'] = cursor.fetchall()
+        
+        cursor.close()
+        conn.close()
+
+    except Exception as e:
+        flash("Error getting users from database.", "danger")
+        print(f"User Management Error: {e}")
+
+    return render_template('userManagement.html')
+
+@app.route('/delete_user', methods=["POST"])
+@nocache
+def delete_user():
+    userID = request.form.get('user_id')
+
+    try:
+        conn = connectSQL()
+        cursor = conn.cursor()
+
+        query = "DELETE FROM users WHERE ID = %s"
+        values = (userID,)
+
+        cursor.execute(query, values)
+        conn.commit()
+
+        flash("User deleted successfully.", "success")
+        
+        cursor.close()
+        conn.close()
+
+    except Exception as e:
+        flash("Error deleting user.", "danger")
+        print(f"User Deletion Error: {e}")
+
+    return redirect(url_for("manage_users"))
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)
