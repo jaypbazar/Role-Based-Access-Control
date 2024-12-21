@@ -1,0 +1,38 @@
+body {
+    background-image: url("../img/bg-cspc.jpg");
+    background-repeat: repeat;
+    background-position-x: right;
+    background-position-y: center;
+    background-attachment: fixed;
+    background-size: 150%; 
+    overflow-x: hidden;
+}
+
+.screen_cover {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #000000;
+    opacity: 60%;
+    z-index: -100;
+}
+
+.floating-alert {
+    position: fixed;
+    top: 1%;
+    right: 1%;
+    z-index: 5000;
+    width: 30%;
+}
+
+p {
+    text-align: justify;
+}
+
+.semi-disabled {
+    pointer-events: none;
+    background-color: #e9ecef;
+    color: #6c757d;
+}

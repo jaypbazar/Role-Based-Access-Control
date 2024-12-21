@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+
+{% block menu %}
+<div class="dropdown-menu dropdown-menu-end dropdown-menu-start-md">
+    <li><a class="dropdown-item" href="/about">About</a></li>
+    <li><a class="dropdown-item" href="/terms">Terms &amp; Conditions</a></li>
+    {% if session.role == 'admin' %}
+        <li><a class="dropdown-item" href="/adminPanel">Admin Panel</a></li>
+    {% endif %}
+    <div class="dropdown-divider"></div>
+    {% if session.user_id %}
+        <li><a class="dropdown-item" href="/logout">Log out</a></li>
+    {% else %}
+        <li><a class="dropdown-item" href="/login">Log in or Sign up</a></li>
+    {% endif %}
+</div>
+{% endblock menu %}
+
+{% block content %}
+<div class="row">
+    <div class="col-1"></div>
+    <div class="col-10">
+        <br>
+        <div class="bg-light text-black rounded-5 p-5" style="--bs-bg-opacity: .7">
+            <h4 class="text-center pb-2">Terms and Conditions</h4>
+            <p>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                Welcome to the Campus Parking Organizer web application. By accessing or using this service, 
+                you agree to comply with and be bound by the following terms and conditions. Please read them 
+                carefully before using the platform.
+                <ol>
+                    <li><span class="fw-bold">Acceptance of Terms</span>
+                        <ul>
+                            <li>
+                                By using this service, you accept these Terms and Conditions in full. If you disagree 
+                                with any part, you must not use the app.
+                            </li>
+                        </ul>
+                    </li>
+                    <li><span class="fw-bold">User Accounts</span>
+                        <ul>
+                            <li>Users must register an account and log in to access reservation features.</li>
+                            <li>
+                                You are responsible for maintaining the confidentiality of your login credentials 
+                                and all activities under your account.
+                            </li>
+                        </ul>
+                    </li>
+                    <li><span class="fw-bold">Service Use</span>
+                        <ul>
+                            <li>
+                                <span class="text-decoration-underline">Real-time Checking</span>The app provides real-time 
+                                updates on parking availability, which are subject to server reliability and network connectivity.
+                            </li>
+                            <li>
+                                <span class="text-decoration-underline">Parking Space Reservation</span>Users may reserve available 
+                                parking spaces. Reservations will be terminated after reservation ends.
+                            </li>
+                            <li>
+                                <span class="text-decoration-underline">Map Navigation</span>The app integrates with third-party map 
+                                providers; we are not responsible for inaccuracies in map data.
+                            </li>
+                        </ul>
+                    </li>
+                    <li><span class="fw-bold">Limitations of Use</span>
+                        <ul>
+                            <li>The app is for personal use only and must not be used for commercial purposes.</li>
+                            <li>Unauthorized access, reverse engineering, or tampering with the system is prohibited.</li>
+                        </ul>
+                    </li>
+                    <li><span class="fw-bold">Liability</span>
+                        <ul>
+                            <li>
+                                While we strive to provide accurate and timely information, we do not guarantee that 
+                                the app will always function without interruptions, delays, or errors.
+                            </li>
+                            <li>
+                                We are not responsible for any damages, losses, or inconveniences caused by incorrect 
+                                or unavailable parking information.
+                            </li>
+                        </ul>
+                    </li>
+                    <li><span class="fw-bold">Security</span>
+                        <ul>
+                            <li>
+                                Your data, including passwords, will be encrypted to ensure privacy. However, no system is 
+                                completely secure, and we cannot guarantee absolute protection against unauthorized access.
+                            </li>
+                        </ul>
+                    </li>
+                    <li><span class="fw-bold">Governing Laws</span>
+                        <ul>
+                            <li>
+                                These terms and conditions are governed by the laws of the Philippines, including the 
+                                Data Privacy Act of 2012 (Republic Act No. 10173). We are committed to protecting your 
+                                personal information in compliance with Philippine data privacy and protection laws. 
+                                Any disputes arising will be subject to the exclusive jurisdiction of Philippine courts.
+                            </li>
+                        </ul>
+                    </li>
+                </ol>
+                For more details, please contact <a href="https://mail.google.com/mail/?view=cm&fs=1&to=jabazar@my.cspc.edu.ph">jabazar@my.cspc.edu.ph</a>.
+            </p>
+    </div>
+    <div class="col-1"></div>
+</div>
+{% endblock content %}

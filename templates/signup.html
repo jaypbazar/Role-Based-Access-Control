@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+
+{% block title %}Sign up{% endblock title %}
+
+{% block menu %}
+<ul class="dropdown-menu dropdown-menu-end dropdown-menu-start-md">
+    <li><a class="dropdown-item" href="/">Home</a></li>
+    <li><a class="dropdown-item" href="/about">About</a></li>
+    <li><a class="dropdown-item" href="/terms">Terms &amp; Conditions</a></li>
+  </ul>
+{% endblock menu %}
+
+{% block content %}
+<br><br>
+<div class="container w-50 h-100 py-3 my-4 rounded-5 bg-light bg-opacity-50 text-black">
+
+    <ul class="nav nav-tabs row align-items-center border-0">
+        <li class="nav-item text-center col">
+          <a class="nav-link fw-bold text-black border-0 rounded-top-4" href="/login" role="tab" aria-controls="pills-home" aria-selected="true">Login</a>
+        </li>
+        <li class="nav-item text-center col">
+          <a class="nav-link active fw-bold text-black bg-transparent border-bottom-0 border-white rounded-top-4" href="/signup" role="tab" aria-controls="pills-profile" aria-selected="false">Signup</a>
+        </li>
+    </ul>
+
+    <div class="pb-4 border border-white rounded-4 rounded-top-0">
+      <br><br>  
+      <div class="row align-items-center">
+        <div class="col">
+        </div>
+        <div class="col-10">
+          <form action="/signup" method="post">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <div class="row g-3">
+              <div class="col-md-4">
+                <input type="text" class="form-control border-secondary rounded-pill" name="fname" placeholder="First Name" required>
+              </div>
+              <div class="col-md-4">
+                <input type="text" class="form-control border-secondary rounded-pill" name="mname" placeholder="Middle Name">
+              </div>
+              <div class="col-md-4">
+                <input type="text" class="form-control border-secondary rounded-pill" name="lname" placeholder="Last Name" required>
+              </div>
+              <div class="col-md-4">
+                <input type="radio" name="role" id="student" value="student" checked>
+                <label for="student">Student</label><br>
+                <input type="radio" name="role" id="employee" value="employee">
+                <label for="employee">Employee</label>
+              </div>
+              <div class="col-md-8">
+                <input type="text" class="form-control border-secondary rounded-pill" maxlength="9" name="id" placeholder="ID Number" required>
+              </div>
+              <div class="col-md-7">
+                <input type="email" class="form-control border-secondary rounded-pill" placeholder="CSPC Email" name="email" required>
+              </div>
+              <div class="col-md-5">
+                <input type="tel" class="form-control border-secondary rounded-pill" maxlength="11" placeholder="Phone Number" name="contact" required>
+              </div>
+              <div class="col-md-6">
+                <input type="password" class="form-control border-secondary rounded-pill" id="inputPassword" name="password" placeholder="Password" required>
+              </div>
+              <div class="col-md-6">
+                <input type="password" class="form-control border-secondary rounded-pill" id="inputPassword2" name="password2" placeholder="Retype Password" required>
+              </div>
+              <div class="d-grid col-3 mx-auto pt-3">
+                <button class="btn btn-primary rounded-pill" type="submit">Register</button>
+              </div>
+            </div>
+          </form>
+        </div>
+        <div class="col">
+        </div>
+      </div>
+    </div>
+
+  </div>
+  <script src="../static/js/validate_signup.js"></script>
+{% endblock content %}

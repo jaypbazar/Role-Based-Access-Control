@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+
+{% block menu %}
+<div class="dropdown-menu dropdown-menu-end dropdown-menu-start-md">
+    <li><a class="dropdown-item" href="/about">About</a></li>
+    <li><a class="dropdown-item" href="/terms">Terms &amp; Conditions</a></li>
+    {% if session.role == 'admin' %}
+        <li><a class="dropdown-item" href="/adminPanel">Admin Panel</a></li>
+    {% endif %}
+    <div class="dropdown-divider"></div>
+    {% if session.user_id %}
+        <li><a class="dropdown-item" href="/logout">Log out</a></li>
+    {% else %}
+        <li><a class="dropdown-item" href="/login">Log in or Sign up</a></li>
+    {% endif %}
+</div>
+{% endblock menu %}
+
+{% block content %}
+<div class="row">
+    <div class="col-1"></div>
+    <div class="col-10">
+        <br>
+        <div class="bg-light text-black rounded-5 p-5" style="--bs-bg-opacity: .7">
+            <h4 class="text-center">Description</h4>
+            <p>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <span class="fw-bold">Campus Parking Organizer</span> is a web application that allows users to see available 
+                parking spaces inside the campus using real-time checking. It mainly focuses on effectively 
+                organizing vehicles parked inside the campus. This includes vehicles owned by students, faculties, 
+                and other employees. The main features of this app include real-time checking, map navigation, 
+                and space reservation.
+            </p>
+            <hr>
+            <h4 class="text-center">Features</h4>
+            <p>
+                <ol>
+                    <li>
+                        <span class="fw-bold">Real-time Checking</span> - users can always check the number of available parking 
+                        spaces inside the campus using the indicator above the interactive map.
+                    </li>
+                    <li>
+                        <span class="fw-bold">Map Navigation</span> - users can view the locations of different parking spaces 
+                        inside the campus using the interactive map. <span style="color: #00aa00;">Green</span> spaces indicates 
+                        available parking space, <span style="color: #ff0000;">Red</span> indicates occupied, and 
+                        <span style="color: #0000ff;">Blue</span> indicates reservation. 
+                    </li>
+                    <li>
+                        <span class="fw-bold">Parking Space Reservation</span> - only users that are currently logged in can 
+                        reserve a particular parking space. 
+                    </li>
+                </ol>
+            </p>
+            <hr>
+            <h4 class="text-center">Contacts</h4>
+            <div class="row text-center">
+                <div class="col-6">
+                    Jayp S. Bazar <br>
+                    <a href="https://mail.google.com/mail/?view=cm&fs=1&to=jabazar@my.cspc.edu.ph">jabazar@my.cspc.edu.ph</a><br>
+                    Camarines Sur Polytechnic Colleges
+                </div><div class="col-6">
+                    Joshua Charles Bañaria <br>
+                    <a href="https://mail.google.com/mail/?view=cm&fs=1&to=jobanaria@my.cspc.edu.ph">jobanaria@my.cspc.edu.ph</a><br>
+                    Camarines Sur Polytechnic Colleges
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-1"></div>
+</div>
+{% endblock content %}

@@ -1,0 +1,266 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Panel{% endblock title %}
+
+{% block menu %}
+<div class="dropdown-menu dropdown-menu-end dropdown-menu-start-md">
+    <li><a class="dropdown-item" href="/">Home</a></li>
+    <li><a class="dropdown-item" href="/about">About</a></li>
+    <li><a class="dropdown-item" href="/terms">Terms &amp; Conditions</a></li>
+    <div class="dropdown-divider"></div>
+    <li><a class="dropdown-item" href="/logout">Log out</a></li>
+  </div>
+{% endblock menu %}
+
+{% block content %}
+  <div class="row">
+    <div class="col-1"></div>
+    <div class="col-10">
+        <br><br>
+        <div class="bg-light text-black rounded-3 p-4 m-2 overflow-auto" style="--bs-bg-opacity: .7">
+          <nav class="navbar">
+            <div class="container-fluid">
+              <h3 class="text-center pb-2 m-2">Welcome, Administrator {{session.username}}!</h3>
+              <a href="/manage_users" class="btn btn-primary">Manage Users</a>  
+            </div>
+          </nav>
+          
+          <hr>
+          {% if parkingLots %}
+            <table class="table table-bordered border-dark caption-top">
+              <caption class="text-black"><h5>Parking Lots</h5></caption>
+              <thead>
+                <tr class="table-dark text-light text-center">
+                  <th>Name</th>
+                  <th>Latitude 1</th>
+                  <th>Longitude 1</th>
+                  <th>Latitude 2</th>
+                  <th>Longitude 2</th>
+                  <th>Status</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for lot in parkingLots %}
+                  <tr class="
+                  {% if lot[5] == 'available' %}
+                    table-success
+                  {% elif lot[5] == 'reserved' %}
+                    table-primary
+                  {% else %}
+                    table-danger
+                  {% endif %}">
+                    <td>{{lot[0]}}</td>
+                    <td>{{lot[1]}}</td>
+                    <td>{{lot[2]}}</td>
+                    <td>{{lot[3]}}</td>
+                    <td>{{lot[4]}}</td>
+                    <td>{{lot[5]}}</td>
+                    <td class="text-center fw-bold">
+                      <a href="#" class="edit-lot" 
+                        data-lot-name="{{lot[0]}}"
+                        data-lat1="{{lot[1]}}"
+                        data-lon1="{{lot[2]}}"
+                        data-lat2="{{lot[3]}}"
+                        data-lon2="{{lot[4]}}"
+                        data-status="{{lot[5]}}"
+                        data-bs-toggle="modal" 
+                        data-bs-target="#editParkingStatusModal">update</a>
+                    </td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          {% else %}
+            <h5>No available parking lot to display.</h5>
+          {% endif %}
+          <hr>
+          {% if reservations %}
+            <table class="table table-bordered table-primary table-striped border-dark caption-top">
+              <caption class="text-black"><h5>Reservations</h5></caption>
+              <thead>
+                <tr class="table-dark text-light text-center">
+                  <th>Parking Lot Name</th>
+                  <th>Date Reserved</th>
+                  <th>Time Started</th>
+                  <th>Time Ended</th>
+                  <th>Client ID</th>
+                  <th></th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for booking in reservations %}
+                  <tr>
+                    <td>{{booking[0]}}</td>
+                    <td>{{booking[1]}}</td>
+                    <td>{{booking[2]}}</td>
+                    <td>{{booking[3]}}</td>
+                    <td>{{booking[4]}}</td>
+                    <td class="text-center fw-bold">
+                      <a href="#" class="edit-booking" 
+                        data-lot-name="{{booking[0]}}"
+                        data-date="{{booking[1]}}"
+                        data-time-start="{{booking[2]}}"
+                        data-time-end="{{booking[3]}}"
+                        data-client-id="{{booking[4]}}"
+                        data-bs-toggle="modal" 
+                        data-bs-target="#updateBookingModal">update</a>
+                    </td>
+                    <td class="text-center">
+                      <form action="/delete_booking", method="post">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <input type="text" name="lotName" value="{{booking[0]}}" hidden>
+                        <button class="text-decoration-underline text-danger border-0 bg-transparent fw-bold" type="submit">
+                          delete
+                        </button>
+                      </form>
+                    </td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          {% else %}
+          <h5>No reservations has been made.</h5>
+          {% endif %}
+        </div>
+    </div>
+    <div class="col-1"></div>
+  </div>
+
+  <!-- Edit Parking Status Modal -->
+  <div class="modal fade" id="editParkingStatusModal" tabindex="-1" aria-labelledby="editParkingStatusModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content bg-primary-subtle rounded-4 p-2">
+        <div class="modal-header">
+          <h5 class="modal-title" id="editParkingStatusModalLabel">Update Parking Lot Status</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <hr>
+        <form id="editParkingLotForm" action="/update_status" method="POST">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <div class="modal-body">
+            <div class="mb-3">
+              <label for="lotName" class="form-label">Lot Name</label>
+              <input type="text" class="form-control semi-disabled" id="lotName" name="lot_name" readonly>
+            </div>
+            <div class="row">
+              <div class="col-6 mb-3">
+                <label for="latitude1" class="form-label">Latitude 1</label>
+                <input type="text" class="form-control semi-disabled" id="latitude1" name="latitude1" readonly>
+              </div>
+              <div class="col-6 mb-3">
+                <label for="longitude1" class="form-label">Longitude 1</label>
+                <input type="text" class="form-control semi-disabled" id="longitude1" name="longitude1" readonly>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-6 mb-3">
+                <label for="latitude2" class="form-label">Latitude 2</label>
+                <input type="text" class="form-control semi-disabled" id="latitude2" name="latitude2" readonly>
+              </div>
+              <div class="col-6 mb-3">
+                <label for="longitude2" class="form-label">Longitude 2</label>
+                <input type="text" class="form-control semi-disabled" id="longitude2" name="longitude2" readonly>
+              </div>
+            </div>
+            <div class="mb-3">
+              <label for="status" class="form-label">Status</label>
+              <select class="form-select" id="status" name="status" required>
+                <option value="available">available</option>
+                <option value="occupied">occupied</option>
+              </select>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-outline-dark rounded-pill" data-bs-dismiss="modal">Cancel</button>
+            <button type="submit" class="btn btn-primary rounded-pill">Save Changes</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Update Booking Modal -->
+  <div class="modal fade" id="updateBookingModal" tabindex="-1" aria-labelledby="updateBookingModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content bg-primary-subtle rounded-4 p-2">
+        <div class="modal-header">
+          <h5 class="modal-title" id="updateBookingModalLabel">Update Booking Details</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <hr>
+        <form id="updateBookingForm" action="/update_booking" method="POST">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <div class="modal-body">
+            <div class="mb-3">
+              <label for="bookingLotName" class="form-label">Parking Lot Name</label>
+              <input type="text" class="form-control semi-disabled" id="bookingLotName" name="lot_name" readonly>
+            </div>
+            <div class="mb-3">
+              <label for="bookingDate" class="form-label">Date</label>
+              <input type="date" class="form-control rounded-pill" id="bookingDate" name="booking_date" required>
+            </div>
+            <div class="row">
+              <div class="col-6 mb-3">
+                <label for="bookingTimeStart" class="form-label">Start Time</label>
+                <input type="time" class="form-control rounded-pill" id="bookingTimeStart" name="time_start" required>
+              </div>
+              <div class="col-6 mb-3">
+                <label for="bookingTimeEnd" class="form-label">End Time</label>
+                <input type="time" class="form-control rounded-pill" id="bookingTimeEnd" name="time_end" required>
+              </div>
+            </div>
+            <div class="mb-3">
+              <label for="bookingClientId" class="form-label">Client ID</label>
+              <input type="text" class="form-control rounded-pill semi-disabled" id="bookingClientId" name="client_id" readonly>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-outline-dark rounded-pill" data-bs-dismiss="modal">Cancel</button>
+            <button type="submit" class="btn btn-primary rounded-pill">Save Changes</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Script for Parking Lot Status Modal (previous script remains unchanged)
+      const editLinks = document.querySelectorAll('.edit-lot');
+      const modal = document.getElementById('editParkingStatusModal');
+      
+      editLinks.forEach(link => {
+        link.addEventListener('click', function(e) {
+          document.getElementById('lotName').value = this.getAttribute('data-lot-name');
+          document.getElementById('latitude1').value = this.getAttribute('data-lat1');
+          document.getElementById('longitude1').value = this.getAttribute('data-lon1');
+          document.getElementById('latitude2').value = this.getAttribute('data-lat2');
+          document.getElementById('longitude2').value = this.getAttribute('data-lon2');
+          
+          const statusSelect = document.getElementById('status');
+          statusSelect.value = this.getAttribute('data-status');
+        });
+      });
+
+      // New script for Booking Update Modal
+      const editBookingLinks = document.querySelectorAll('.edit-booking');
+      
+      editBookingLinks.forEach(link => {
+        link.addEventListener('click', function(e) {
+          document.getElementById('bookingLotName').value = this.getAttribute('data-lot-name');
+          
+          // Parse and format date
+          const originalDate = this.getAttribute('data-date');
+          document.getElementById('bookingDate').value = originalDate;
+          
+          // Set time values
+          document.getElementById('bookingTimeStart').value = this.getAttribute('data-time-start');
+          document.getElementById('bookingTimeEnd').value = this.getAttribute('data-time-end');
+          document.getElementById('bookingClientId').value = this.getAttribute('data-client-id');
+        });
+      });
+    });
+  </script>
+{% endblock content %}
