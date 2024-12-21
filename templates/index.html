@@ -1,21 +1,5 @@
 {% extends "base.html" %}
 
-{% block menu %}
-<div class="dropdown-menu dropdown-menu-end dropdown-menu-start-md">
-    <li><a class="dropdown-item" href="/about">About</a></li>
-    <li><a class="dropdown-item" href="/terms">Terms &amp; Conditions</a></li>
-    {% if session.role == 'admin' %}
-        <li><a class="dropdown-item" href="/adminPanel">Admin Panel</a></li>
-    {% endif %}
-    <div class="dropdown-divider"></div>
-    {% if session.user_id %}
-        <li><a class="dropdown-item" href="/logout">Log out</a></li>
-    {% else %}
-        <li><a class="dropdown-item" href="/login">Log in or Sign up</a></li>
-    {% endif %}
-</div>
-{% endblock menu %}
-
 {% block content %}
 <div>
     {% if session.user_id %}

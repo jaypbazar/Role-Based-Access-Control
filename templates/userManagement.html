@@ -2,20 +2,17 @@
 
 {% block title %}User Management{% endblock title %}
 
-{% block menu %}
-<div class="dropdown-menu dropdown-menu-end dropdown-menu-start-md">
-    <li><a class="dropdown-item" href="/">Home</a></li>
-    <li><a class="dropdown-item" href="/about">About</a></li>
-    <li><a class="dropdown-item" href="/terms">Terms &amp; Conditions</a></li>
-    <div class="dropdown-divider"></div>
-    <li><a class="dropdown-item" href="/logout">Log out</a></li>
-  </div>
-{% endblock menu %}
-
 {% block content %}
     <div class="row justify-content-center m-0 p-0">
         <div class="container bg-light col-10 m-5 p-5 rounded-5 text-black overflow-auto" style="--bs-bg-opacity: .7">
-            <h4 class="text-center">User Management</h4>
+            <nav class="navbar">
+                <div class="container-fluid">
+                  <div></div>
+                  <div></div>
+                  <h4 class="text-center">User Management</h4>
+                  <a href="/signup" class="btn btn-primary">Add New User</a>  
+                </div>
+              </nav>
             {% if session.admin_list %}
             <hr>
                 <table class="table table-hover table-striped table-bordered border-dark caption-top align-middle table-sm shadow">
@@ -28,7 +25,6 @@
                             <th class="text-uppercase">Last Name</th>
                             <th class="text-uppercase">Contact</th>
                             <th class="text-uppercase">Email</th>
-                            <th class="text-uppercase">Password</th>
                             <th class="text-uppercase">Action</th>
                         </tr>
                     </thead>
@@ -41,18 +37,19 @@
                             <td>{{user[3]}}</td>
                             <td>{{user[6]}}</td>
                             <td>{{user[5]}}</td>
-                            <td>{{user[7]}}</td>
                             <td class="text-center">
-                                <form action="/edit_profile" method="POST" class="d-inline">
+                                {% if session.is_admin_more_than_one %}
+                                <form action="/demote_user" method="POST" class="d-inline">
                                     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                                     <input type="hidden" name="user_id" value="{{user[0]}}">
-                                    <button type="submit" class="btn btn-primary btn-sm me-1">Edit</button>
+                                    <button type="submit" class="btn btn-warning btn-sm me-1">Demote</button>
                                 </form>
                                 <a href="#" class="delete-user btn btn-danger btn-sm"
                                    data-user-id="{{user[0]}}"
                                    data-user-name="{{user[1]}} {{user[3]}}"
                                    data-bs-toggle="modal"
                                    data-bs-target="#deleteConfirmModal">Delete</a>
+                                {% endif %}
                             </td>
                         </tr>
                         {% endfor %}
@@ -71,9 +68,8 @@
                             <th class="text-uppercase">Middle Name</th>
                             <th class="text-uppercase">Last Name</th>
                             <th class="text-uppercase">Contact</th>
-                            <th class="text-uppercase">User Type</th>
                             <th class="text-uppercase">Email</th>
-                            <th class="text-uppercase">Password</th>
+                            <th class="text-uppercase">User Type</th>
                             <th class="text-uppercase">Action</th>
                         </tr>
                     </thead>
@@ -82,17 +78,17 @@
                         <tr class="text-center">
                             <td class="fw-bold">{{user[0]}}</td>
                             <td>{{user[1]}}</td>
-                            <td>{{user[2]}}</td>
+                            <td>{{user[2]}}</td>    
                             <td>{{user[3]}}</td>
                             <td>{{user[6]}}</td>
-                            <td>{{user[4]}}</td>
                             <td>{{user[5]}}</td>
-                            <td>{{user[7]}}</td>
+                            <td>{{user[4]}}</td>
                             <td class="text-center">
-                                <form action="/edit_profile" method="POST" class="d-inline">
+                                <form action="/promote_user" method="POST" class="d-inline">
                                     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                                     <input type="hidden" name="user_id" value="{{user[0]}}">
-                                    <button type="submit" class="btn btn-primary btn-sm me-1">Edit</button>
+                                    <input type="hidden" name="role" value="{{user[4]}}">
+                                    <button type="submit" class="btn btn-success btn-sm me-1">Promote</button>
                                 </form>
                                 <a href="#" class="delete-user btn btn-danger btn-sm"
                                    data-user-id="{{user[0]}}"

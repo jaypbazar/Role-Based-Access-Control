@@ -9,7 +9,7 @@ app.config['REMEMBER_COOKIE_REFRESH_EACH_REQUEST'] = False
 app.config['WTF_CSRF_TIME_LIMIT'] = 3600
 app.config['SESSION_COOKIE_SECURE'] = True
 app.config['SESSION_COOKIE_HTTPONLY'] = True
-app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(minutes=30)
+app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(minutes=60)
 csrf = CSRFProtect(app)
 
 '''
@@ -133,9 +133,6 @@ def login():
 @app.route('/signup', methods=["GET", "POST"])
 @nocache
 def signup():
-    if 'user_id' in session:
-        return redirect(url_for("index"))
-    
     if request.method == "POST":
         user_id = request.form.get("id")
         firstname = request.form.get("fname")
@@ -163,6 +160,10 @@ def signup():
             conn.close()
 
             flash("Registered successfully.", "success")
+
+            if session.get("role") == "admin":
+                return redirect(url_for("manage_users"))
+            
             return render_template("login.html")
 
         except Exception as e:
@@ -356,6 +357,7 @@ def manage_users():
         cursor.execute(query)
 
         session['admin_list'] = cursor.fetchall()
+        session['is_admin_more_than_one'] = len(session.get('admin_list')) > 1
         
         cursor.close()
         conn.close()
@@ -391,6 +393,55 @@ def delete_user():
         print(f"User Deletion Error: {e}")
 
     return redirect(url_for("manage_users"))
+
+@app.route('/promote_user', methods=["POST", "GET"])
+@nocache
+def promote_user():
+    userID = request.form.get("user_id")
+    role = request.form.get('role')
+    new_role = "admin" if role == "employee" else "employee"
+
+    try:
+        conn = connectSQL()
+        cursor = conn.cursor()
+
+        query = "UPDATE users SET Role = %s WHERE ID = %s"
+        values = (new_role, userID)
+
+        cursor.execute(query, values)
+        conn.commit()
+
+        flash(f"User {userID} has been promoted.", "success")
+
+    except Exception as e:
+        print(f"Profile Error: {e}")
+        flash("Error promoting user.", "danger")
+
+    return redirect(url_for("manage_users"))
+
+@app.route('/demote_user', methods=["POST", "GET"])
+@nocache
+def demote_user():
+    userID = request.form.get("user_id")
+
+    try:
+        conn = connectSQL()
+        cursor = conn.cursor()
+
+        query = "UPDATE users SET Role = %s WHERE ID = %s"
+        values = ("student", userID)
+
+        cursor.execute(query, values)
+        conn.commit()
+
+        flash(f"User {userID} has been demoted.", "warning")
+
+    except Exception as e:
+        print(f"Profile Error: {e}")
+        flash("Error demoting user.", "danger")
+
+    return redirect(url_for("manage_users"))
+
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)

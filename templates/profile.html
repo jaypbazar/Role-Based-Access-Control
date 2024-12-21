@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+
+{% block title %}Profile{% endblock title %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="mb-4">Profile</h2>
+
+    <!-- Profile Information -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <div class="text-center">
+                <img src="/static/images/default-profile.png" alt="Profile Picture" class="rounded-circle" width="150">
+            </div>
+            <hr>
+            <p><strong>ID Number:</strong> {{ session.current_user[] }}</p>
+            <p><strong>Full Name:</strong> {{ user.first_name }} {{ user.middle_name }} {{ user.last_name }}</p>
+            <p><strong>Role:</strong> {{ user.role }}</p>
+            <p><strong>Email:</strong> {{ user.email }}</p>
+            <p><strong>Contact Number:</strong> {{ user.contact_number }}</p>
+        </div>
+    </div>
+
+    <!-- Edit Profile Form -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <h5>Edit Profile</h5>
+            <form method="post" action="/update-profile">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label for="firstName" class="form-label">First Name</label>
+                    <input type="text" class="form-control" id="firstName" name="first_name" value="{{ user.first_name }}">
+                </div>
+                <div class="mb-3">
+                    <label for="middleName" class="form-label">Middle Name</label>
+                    <input type="text" class="form-control" id="middleName" name="middle_name" value="{{ user.middle_name }}">
+                </div>
+                <div class="mb-3">
+                    <label for="lastName" class="form-label">Last Name</label>
+                    <input type="text" class="form-control" id="lastName" name="last_name" value="{{ user.last_name }}">
+                </div>
+                <div class="mb-3">
+                    <label for="role" class="form-label">Role</label>
+                    <select class="form-select" id="role" name="role">
+                        <option value="admin" {% if user.role == 'admin' %}selected{% endif %}>Admin</option>
+                        <option value="student" {% if user.role == 'student' %}selected{% endif %}>Student</option>
+                        <option value="employee" {% if user.role == 'employee' %}selected{% endif %}>Employee</option>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label for="contactNumber" class="form-label">Contact Number</label>
+                    <input type="text" class="form-control" id="contactNumber" name="contact_number" value="{{ user.contact_number }}">
+                </div>
+                <button type="submit" class="btn btn-primary">Save Changes</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Change Password -->
+    <div class="card">
+        <div class="card-body">
+            <h5>Change Password</h5>
+            <form method="post" action="/change-password">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label for="currentPassword" class="form-label">Current Password</label>
+                    <input type="password" class="form-control" id="currentPassword" name="current_password" required>
+                </div>
+                <div class="mb-3">
+                    <label for="newPassword" class="form-label">New Password</label>
+                    <input type="password" class="form-control" id="newPassword" name="new_password" required>
+                </div>
+                <div class="mb-3">
+                    <label for="confirmPassword" class="form-label">Confirm New Password</label>
+                    <input type="password" class="form-control" id="confirmPassword" name="confirm_password" required>
+                </div>
+                <button type="submit" class="btn btn-danger">Change Password</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock content %}

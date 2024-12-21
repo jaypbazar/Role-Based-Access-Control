@@ -2,19 +2,14 @@
 
 {% block title %}Sign up{% endblock title %}
 
-{% block menu %}
-<ul class="dropdown-menu dropdown-menu-end dropdown-menu-start-md">
-    <li><a class="dropdown-item" href="/">Home</a></li>
-    <li><a class="dropdown-item" href="/about">About</a></li>
-    <li><a class="dropdown-item" href="/terms">Terms &amp; Conditions</a></li>
-  </ul>
-{% endblock menu %}
-
 {% block content %}
 <br><br>
 <div class="container w-50 h-100 py-3 my-4 rounded-5 bg-light bg-opacity-50 text-black">
 
-    <ul class="nav nav-tabs row align-items-center border-0">
+    {% if session.role == 'admin' %}
+    <h4 class="text-center">Add New User</h4>
+    {% else %}
+      <ul class="nav nav-tabs row align-items-center border-0">
         <li class="nav-item text-center col">
           <a class="nav-link fw-bold text-black border-0 rounded-top-4" href="/login" role="tab" aria-controls="pills-home" aria-selected="true">Login</a>
         </li>
@@ -22,6 +17,7 @@
           <a class="nav-link active fw-bold text-black bg-transparent border-bottom-0 border-white rounded-top-4" href="/signup" role="tab" aria-controls="pills-profile" aria-selected="false">Signup</a>
         </li>
     </ul>
+    {% endif %}
 
     <div class="pb-4 border border-white rounded-4 rounded-top-0">
       <br><br>  
@@ -45,7 +41,11 @@
                 <input type="radio" name="role" id="student" value="student" checked>
                 <label for="student">Student</label><br>
                 <input type="radio" name="role" id="employee" value="employee">
-                <label for="employee">Employee</label>
+                <label for="employee">Employee</label><br>
+                {% if session.role == 'admin' %}
+                <input type="radio" name="role" id="admin" value="admin">
+                <label for="admin">Admin</label>
+                {% endif %}
               </div>
               <div class="col-md-8">
                 <input type="text" class="form-control border-secondary rounded-pill" maxlength="9" name="id" placeholder="ID Number" required>
