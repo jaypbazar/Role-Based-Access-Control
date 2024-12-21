@@ -50,7 +50,7 @@
                     <li><a class="dropdown-item" href="/about">About</a></li>
                     {% if session.user_id %}
                         <li><a class="dropdown-item" href="/profile">Profile</a></li>
-                        {% if session.role == 'admin' %}
+                        {% if session.is_admin %}
                             <li><a class="dropdown-item" href="/adminPanel">Admin Panel</a></li>
                         {% endif %}
                     {% endif %}

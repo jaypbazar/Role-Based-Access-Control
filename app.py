@@ -45,6 +45,7 @@ Employee 2
 @app.route('/')
 @nocache
 def index():
+    session['is_admin'] = is_admin(session.get('user_id'))
     session['no_of_available_lots'] = 0
     try:
         conn = connectSQL()
@@ -112,7 +113,6 @@ def login():
             if user:
                 session['user'] = user
                 session['user_id'] = user[0]
-                session['role'] = user[4]
 
                 if is_admin(session.get('user_id')):
                     return redirect(url_for('adminPanel'))

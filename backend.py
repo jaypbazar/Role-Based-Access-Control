@@ -62,7 +62,16 @@ Returns:
     except Exception as e:
         print(f"Database Error: {e}")
 
-def is_admin(user_id) -> bool:
+def is_admin(user_id: str) -> bool:
+    '''
+A function that check if the user is an admin
+
+Parameters:
+    user_id - the id of user to check
+
+Returns:
+    true - if user is admin otherwise false
+    '''
     try:
         conn = connectSQL()
         cursor = conn.cursor()
@@ -70,7 +79,13 @@ def is_admin(user_id) -> bool:
         query = "SELECT ID FROM users WHERE Role = 'admin'"
         cursor.execute(query)
 
-        return user_id in cursor.fetchall()
+        admin_ids = []
+        for row in cursor.fetchall():
+            admin_ids.append(row[0])
+
+        print(admin_ids)
+
+        return user_id in admin_ids
 
     except Exception as e:
         print(f"Admin Check Error: {e}")
