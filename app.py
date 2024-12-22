@@ -373,6 +373,9 @@ def delete_user():
         conn.commit()
 
         flash("User deleted successfully.", "success")
+
+        if userID == session.get('user_id'):
+            return redirect(url_for("logout"))
         
         cursor.close()
         conn.close()
