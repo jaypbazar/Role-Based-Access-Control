@@ -98,17 +98,13 @@ ROLE-BASED ACCESS CONTROL/
 ## Key Libraries
 
 - Flask
-- Flask-Login
 - mysql-connector-python
 - Hashlib
 - Flask-WTF (for CSRF protection)
 
 ## Contributors
 
-**Programmers:**
 - Bazar Jayp S
-
-**Documentation:**
 - Ubante Jay Marion Bristol
 
 ## Future Improvements
@@ -119,4 +115,4 @@ ROLE-BASED ACCESS CONTROL/
 
 ## Support
 
-If you encounter any issues, please check the troubleshooting section in the documentation or contact support at [support_email].
+If you encounter any issues, please check the troubleshooting section in the documentation or contact support at jabazar@my.cspc.edu.ph.
