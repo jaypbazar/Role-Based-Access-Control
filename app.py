@@ -117,6 +117,7 @@ def login():
 @app.route('/signup', methods=["GET", "POST"])
 @nocache
 def signup():
+    session['is_admin'] = is_admin(session.get('user_id'))
     if request.method == "POST":
         user_id = request.form.get("id")
         firstname = request.form.get("fname")
@@ -264,6 +265,8 @@ def logout():
 @app.route('/adminPanel')
 @nocache
 def adminPanel():
+    session['is_admin'] = is_admin(session.get('user_id'))
+
     if session.get('user_id'):
         if is_admin(session.get('user_id')):
             try:
@@ -321,7 +324,9 @@ def update_status():
 @app.route('/manage_users', methods=["POST", "GET"])
 @nocache
 def manage_users():
-    if not is_admin(session.get('user_id')):
+    session['is_admin'] = is_admin(session.get('user_id'))
+
+    if not session.get('is_admin'):
         flash("Access denied! Only admins are allowed.", "danger")
         return redirect(url_for('index'))
     
