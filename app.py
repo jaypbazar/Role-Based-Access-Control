@@ -1,8 +1,6 @@
 from flask import Flask, request, session, redirect, render_template, url_for, flash
 from flask_wtf.csrf import CSRFProtect
 from datetime import timedelta
-from flask import send_file
-import io
 from backend import *
 
 app = Flask(__name__)
@@ -17,27 +15,11 @@ csrf = CSRFProtect(app)
 '''
 Sample Accounts:
 
-Admin 1
+Admin
     ID: 221008049  
     Password: Adm1nP@ssw0rd
 
-Student 1
-    ID: 2023123456
-    Password: M@ri4Cl@r@2024!
-
-Student 2
-    ID: 2023126789
-    Password: @ng3laMar!e2024#
-
-Student 3
-    ID: 2023987654
-    Password: J0s3phL!u1s2024@
-
-Employee 1
-    ID: 12345678
-    Password: J0hnM!cha3l2024#
-
-Employee 2
+User
     ID: 98765432
     Password: Chr!st!n3J0y2024#
 '''
