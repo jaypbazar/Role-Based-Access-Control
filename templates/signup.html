@@ -6,7 +6,7 @@
 <br><br>
 <div class="container w-50 h-100 py-3 my-4 rounded-5 bg-light bg-opacity-50 text-black">
 
-    {% if session.role == 'admin' %}
+    {% if session.is_admin %}
     <h4 class="text-center">Add New User</h4>
     {% else %}
       <ul class="nav nav-tabs row align-items-center border-0">
@@ -42,7 +42,7 @@
                 <label for="student">Student</label><br>
                 <input type="radio" name="role" id="employee" value="employee">
                 <label for="employee">Employee</label><br>
-                {% if session.role == 'admin' %}
+                {% if session.is_admin %}
                 <input type="radio" name="role" id="admin" value="admin">
                 <label for="admin">Admin</label>
                 {% endif %}
